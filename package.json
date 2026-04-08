@@ -1,0 +1,7 @@
+{
+  "name": "playwright-mcp-server",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npx @playwright/mcp --port 8080 --headless"
+  }
+}
