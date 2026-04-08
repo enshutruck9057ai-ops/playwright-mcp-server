@@ -1,0 +1,33 @@
+steps:
+  # Dockerイメージをビルド
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/playwright-mcp/server:$COMMIT_SHA'
+      - '.'
+
+  # Artifact Registryにプッシュ
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/playwright-mcp/server:$COMMIT_SHA'
+
+  # Cloud Runにデプロイ
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'playwright-mcp-server'
+      - '--image=asia-northeast1-docker.pkg.dev/$PROJECT_ID/playwright-mcp/server:$COMMIT_SHA'
+      - '--region=asia-northeast1'
+      - '--platform=managed'
+      - '--no-allow-unauthenticated'
+      - '--memory=2Gi'
+      - '--cpu=2'
+      - '--concurrency=10'
+      - '--port=8080'
+
+images:
+  - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/playwright-mcp/server:$COMMIT_SHA'
